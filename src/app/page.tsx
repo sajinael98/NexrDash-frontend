@@ -2,12 +2,16 @@
 
 import { Suspense } from "react";
 
-import { WelcomePage } from "@refinedev/core";
+import { Authenticated, WelcomePage, useIsAuthenticated } from "@refinedev/core";
 
 export default function IndexPage() {
+  const {data} = useIsAuthenticated()
+  console.log(data)
   return (
-    <Suspense>
-      <WelcomePage/>      
-    </Suspense>
+    <Authenticated key="home">
+      <Suspense>
+        <WelcomePage />
+      </Suspense>
+    </Authenticated>
   );
 }
