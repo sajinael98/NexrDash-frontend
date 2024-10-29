@@ -1,16 +1,34 @@
-import Auth0Provider from "next-auth/providers/auth0";
+import { credentialsProvider } from "@providers/credentials-provider";
+import { AuthOptions } from "next-auth";
 
-const authOptions = {
-  // Configure one or more authentication providers
+const authOptions: AuthOptions = {
   providers: [
-    // !!! Should be stored in .env file.
-    Auth0Provider({
-      clientId: "AcinJvjWp1Dr41gPcJeQ20r5vcsteks4",
-      clientSecret:
-        "y3pj2KaTiNgING-5e8_JYmX_bIQSwvkp_XgDcA75sEPSSB2zmi0n-3UoTfH0pOTP",
-      issuer: "https://dev-y38p834gjptooc4g.us.auth0.com",
-    }),
+    credentialsProvider
   ],
+  session: {
+    strategy: 'jwt',
+    maxAge: 1 * 24 * 60 * 60, // 1 day
+  },
+  callbacks: {
+    session({ session, token }) {
+      if (session.user && token.roles) {
+        session.user.username = token.username
+        session.user.fullName = token.fullName
+        session.user.roles = token.roles
+        session.user.permissions = token.permissions
+      }
+      return session
+    },
+    jwt({ token, user }) {
+      if (user) {
+        token.username = user.username
+        token.fullName = user.fullName
+        token.roles = user.roles
+        token.permissions = user.permissions
+      }
+      return token
+    },
+  },
   secret: `UItTuD1HcGXIj8ZfHUswhYdNd40Lc325R8VlxQPUoR0=`,
 };
 

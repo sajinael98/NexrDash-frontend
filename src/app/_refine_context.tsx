@@ -1,15 +1,17 @@
 "use client";
 
-import { GitHubBanner, Refine, type AuthProvider } from "@refinedev/core";
+import { NotificationsProvider } from "@mantine/notifications";
+import { authProvider } from "@providers/auth-provider";
+import { dataProvider } from "@providers/data-provider";
+import UiProvider from "@providers/ui-provider";
+import { Refine } from "@refinedev/core";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
-import { SessionProvider, signIn, signOut, useSession } from "next-auth/react";
+import { useNotificationProvider } from "@refinedev/mantine";
+import routerProvider from "@refinedev/nextjs-router";
+import "@styles/global.css";
+import { SessionProvider, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import React from "react";
-
-import routerProvider from "@refinedev/nextjs-router";
-
-import { dataProvider } from "@providers/data-provider";
-import "@styles/global.css";
 
 type RefineContextProps = {};
 
@@ -33,84 +35,26 @@ const App = (props: React.PropsWithChildren<AppProps>) => {
     return <span>loading...</span>;
   }
 
-  const authProvider: AuthProvider = {
-    login: async () => {
-      signIn("auth0", {
-        callbackUrl: to ? to.toString() : "/",
-        redirect: true,
-      });
-
-      return {
-        success: true,
-      };
-    },
-    logout: async () => {
-      signOut({
-        redirect: true,
-        callbackUrl: "/login",
-      });
-
-      return {
-        success: true,
-      };
-    },
-    onError: async (error) => {
-      if (error.response?.status === 401) {
-        return {
-          logout: true,
-        };
-      }
-
-      return {
-        error,
-      };
-    },
-    check: async () => {
-      if (status === "unauthenticated") {
-        return {
-          authenticated: false,
-          redirectTo: "/login",
-        };
-      }
-
-      return {
-        authenticated: true,
-      };
-    },
-    getPermissions: async () => {
-      return null;
-    },
-    getIdentity: async () => {
-      if (data?.user) {
-        const { user } = data;
-        return {
-          name: user.name,
-          avatar: user.image,
-        };
-      }
-
-      return null;
-    },
-  };
-
   return (
-    <>
-      <GitHubBanner />
-      <RefineKbarProvider>
-        <Refine
-          routerProvider={routerProvider}
-          dataProvider={dataProvider}
-          authProvider={authProvider}
-          options={{
-            syncWithLocation: true,
-            warnWhenUnsavedChanges: true,
-            useNewQueryKeys: true,
-          }}
-        >
-          {props.children}
-          <RefineKbar />
-        </Refine>
-      </RefineKbarProvider>
-    </>
+    <UiProvider>
+      <NotificationsProvider position="bottom-right">
+        <RefineKbarProvider>
+          <Refine
+            routerProvider={routerProvider}
+            dataProvider={dataProvider}
+            authProvider={authProvider}
+            notificationProvider={useNotificationProvider}
+            options={{
+              syncWithLocation: true,
+              warnWhenUnsavedChanges: true,
+              useNewQueryKeys: true,
+            }}
+          >
+            {props.children}
+            <RefineKbar />
+          </Refine>
+        </RefineKbarProvider>
+      </NotificationsProvider>
+    </UiProvider>
   );
 };
