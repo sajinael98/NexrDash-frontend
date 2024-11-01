@@ -7,20 +7,19 @@ type EnhancedUser = {
   username: string;
   roles: string[];
   permissions: string[];
-}
+};
 
 declare module "next-auth" {
-  interface User extends EnhancedUser {
-  }
+  interface User extends EnhancedUser {}
 
   interface Session {
-    user: EnhancedUser
+    user: EnhancedUser;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT extends EnhancedUser {
-    roles: string[]
+    roles: string[];
     permissions: string[];
   }
 }
