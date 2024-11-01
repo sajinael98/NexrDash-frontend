@@ -13,7 +13,7 @@ export const credentialsProvider = CredentialsProvider({
             fullName: "saji nael",
             username: "saji_nael",
             email: "saji.nael.98@gmail.com",
-            image: "https://www.erpmaxsolutions.com/images/team/saji.jpeg",
+            image: "/avatar.png",
             roles: ["admin"],
             permissions: ["POSTS_CREATE", "POSTS_READ", "POSTS_UPDATE", "POSTS_DELETE"]
         }
